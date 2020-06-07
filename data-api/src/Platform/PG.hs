@@ -20,7 +20,7 @@ init = do
 acquirePool :: IO (Pool Connection)
 acquirePool = do
   envUrl <- lookupEnv "DATABASE_URL"
-  let pgUrl = fromString $ fromMaybe "postgresql://localhost/realworld" envUrl
+  let pgUrl = fromString $ fromMaybe "postgresql://localhost/stock-data" envUrl
   createPool (connectPostgreSQL pgUrl) close 1 10 10
 
 migrateDb :: Pool Connection -> IO ()

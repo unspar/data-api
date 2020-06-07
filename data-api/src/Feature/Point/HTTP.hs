@@ -1,26 +1,25 @@
 module Feature.Point.HTTP
-	( routes
+  ( routes
   , Service(..)
   ) where
-
-
-
+import ClassyPrelude
+import Feature.Point.Types
+import Web.Scotty.Trans
 
 class Monad m => Service m where
-  getPoints :: Maybe CurrentUser -> ArticleFilter -> Pagination -> m [Article]
- )
+  getPoints ::  m [Point]
 
 
 
 
-routes :: (Auth.Service m, Service m, MonadIO m) => ScottyT LText m ()
+routes :: (Service m, MonadIO m) => ScottyT LText m ()
 routes = do
   get "/api/points" $ do
-    curUser <- Auth.optionalUser
-    pagination <- parsePagination
-    pointFilter <- parsePointFilter
-    result <- lift $ getPoints curUser pointFilter pagination
-    json $ ArticlesWrapper result (length result)
+    --curUser <- Auth.optionalUser
+    --pagination <- parsePagination
+    --pointFilter <- parsePointFilter
+    result <- lift $ getPoints 
+    json $ PointsWrapper result (length result)
 
 
 

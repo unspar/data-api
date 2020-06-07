@@ -10,6 +10,17 @@ extra-source-files:
 - README.md
 - ChangeLog.md
 
+
+default-extensions:
+- OverloadedStrings
+- QuasiQuotes
+- GeneralizedNewtypeDeriving
+- ConstraintKinds
+- FlexibleContexts
+- TemplateHaskell
+- FlexibleInstances
+- NoImplicitPrelude
+- ScopedTypeVariables
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
 # category:            Web
@@ -19,12 +30,39 @@ extra-source-files:
 # common to point users to the README.md file.
 description:         Please see the README on GitHub at <https://github.com/githubuser/data-api#readme>
 
+
 dependencies:
-- base >= 4.7 && < 5
+- classy-prelude
+- base
+
 
 library:
   source-dirs: src
-
+  dependencies:
+  - scotty
+  - mtl
+  - slug
+  - transformers
+  - aeson
+  - postgresql-simple
+  - postgresql-simple-migration
+  - template-haskell
+  - warp
+  - warp-tls
+  - wai
+  - wai-cors
+  - http-types
+  - resource-pool
+  - data-has
+  - cryptonite
+  - jose
+  - jose-jwt
+  ghc-options:
+  - -Wall
+  - -Werror
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wredundant-constraints
 executables:
   data-api-exe:
     main:                Main.hs

@@ -1,7 +1,9 @@
 module Feature.Point.Types where
 
-
+import ClassyPrelude
 import Platform.AesonUtil
+import Database.PostgreSQL.Simple.FromRow
+
 
 data Point = Point 
   { time :: UTCTime
@@ -17,6 +19,13 @@ $(commonJSONDeriveMany
   , ''PointWrapper
   , ''PointsWrapper
   ])
+
+
+instance FromRow Point where
+  fromRow = Point
+    <$> field
+    <*> field
+
 
 
 

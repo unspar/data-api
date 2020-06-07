@@ -1,7 +1,7 @@
 module Platform.HTTP
-	( main
-	) where
-
+  ( main
+  ) where
+import ClassyPrelude
 import Web.Scotty.Trans
 import Network.HTTP.Types.Status
 import Network.Wai (Response)
@@ -11,10 +11,12 @@ import Network.Wai.Middleware.Cors
 
 import System.Environment
 
-type App r m = ()
+import qualified Feature.Point.HTTP as Point
 
 
-main :: main :: (App r m) => (m Response -> IO Response) -> IO ()
+type App r m = (Point.Service m, MonadIO m)
+
+main :: (App r m) => (m Response -> IO Response) -> IO ()
 main runner = do
   port <- acquirePort
   mayTLSSetting <- acquireTLSSetting
@@ -35,7 +37,28 @@ main runner = do
         then Just $ tlsSettings "secrets/tls/certificate.pem" "secrets/tls/key.pem"
         else Nothing
 
+-- * Routing
 
+routes :: (App r m) => ScottyT LText m ()
+routes = do
+  -- middlewares
+  middleware $ cors $ const $ Just simpleCorsResourcePolicy
+    { corsRequestHeaders = "Authorization":simpleHeaders
+    , corsMethods = "PUT":"DELETE":simpleMethods
+    }
+  options (regex ".*") $ return ()
+
+  -- err 
+  defaultHandler $ \str -> do
+    status status500
+    json str
+
+  -- feature routes
+  Point.routes
+  
+  -- health
+  get "/api/health" $
+    json True
 
 
 

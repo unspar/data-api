@@ -1,36 +1,58 @@
 module Lib
-    ( main
-    ) where
-import ClassyPrelude
-import qualified Platform.HTTP as HTTP
-import qualified Platform.PG as PG
-import qualified Platform.JWT as JWT
+  ( main
+  ) where
+import Control.Applicative
+import Snap.Core
+import Snap.Util.FileServe
+import Snap.Http.Server
+import Feature.Point.HTTP
 
-import qualified Feature.Point.HTTP as PT_HTTP
-import qualified Feature.Point.PG as PT_PG
-import qualified Feature.Point.Service as PT_SERVICE
-
-
+--import Database
 main :: IO ()
 main = do
-  -- acquire resources
-  pgEnv <- PG.init
-  jwtEnv <- JWT.init
-  -- start the app
-  let runner app = flip runReaderT (pgEnv, jwtEnv) $ unAppT app
-  HTTP.main runner
+  -- Run migrations
+  --dbMigration
+  -- Start  application server
+  --quickHttpServe mainRouter
+  quickHttpServe site
 
-type Env = (PG.Env, JWT.Env)
 
-newtype AppT a = AppT
-  { unAppT :: ReaderT Env IO a
-  } deriving  ( Applicative, Functor, Monad
-              , MonadIO, MonadReader Env)
+mainRouter :: Snap ()
+mainRouter =  route [ ("", writeBS "") -- Base / route
+                    , ("point", pointRouter) -- /bookmarks route
+                    ]
 
-instance PT_HTTP.Service AppT where
-  getPoints = PT_SERVICE.getPoints
+pointRouter :: Snap ()
+pointRouter =  route [ ("", method GET  pointIndex)  
+                     , (    "", method POST  pointPost) 
+                     , ("/:id", method GET pointGet)  
+                     --, ("/:id", method PUT pointPut)
+                     --, ("/:id", method DELETE pointDelete)
+                     ]
 
-instance PT_SERVICE.PointRepo AppT where
-  findPoints = PT_PG.findPoints
-  
 
+
+pointIndex :: Snap ()
+pointIndex = do
+  -- Get the limit and start paramters (?limit=:limit&start=:start) if sent
+  maybeLimitTo  <- getParam "limit"
+  maybeOffsetBy <- getParam "start"
+  maybeCollection <- getParam "collection"
+  -- Get a list or array of bookmarks from the database
+  points <- liftIO $ getPoints maybeCollection maybeLimitTo maybeOffsetBy
+  -- Set the content type to JSON
+  -- We will be responding with JSON
+  modifyResponse $ setHeader "Content-Type" "application/json"
+  -- Write out the JSON response
+  writeLBS $ encode $ Prelude.map entityIdToJSON points
+
+
+site :: Snap ()
+site = ifTop (writeBS "hello world")
+  <|> route [ ( "foo", writeBS "bar" ), ( "echo/:echoparam", echoHandler ) ]
+  <|> dir "static" (serveDirectory ".")
+
+echoHandler :: Snap ()
+echoHandler = do
+  param <- getParam "echoparam"
+  maybe (writeBS "must specify echo/param in URL") writeBS param

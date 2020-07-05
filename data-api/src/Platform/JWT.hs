@@ -1,6 +1,6 @@
 module Platform.JWT where
   
-import ClassyPrelude
+import ClassyPrelude as CLSY
 import Data.Has
 import qualified Jose.Jwk as JWK
 import Crypto.Random.Types (MonadRandom)
@@ -23,7 +23,7 @@ acquireJwks :: IO [JWK.Jwk]
 acquireJwks = do
   envUrl <- lookupEnv "JWK_PATH"
   let jwkPath = fromMaybe "secrets/jwk.sig" envUrl
-  fileContent <- readFile jwkPath
+  fileContent <- CLSY.readFile jwkPath
   let parsed = Aeson.eitherDecodeStrict fileContent
   return $ either (\e -> error $ "invalid JWK file: " <> e) pure parsed
 

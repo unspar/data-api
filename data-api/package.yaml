@@ -13,14 +13,14 @@ extra-source-files:
 
 default-extensions:
 - OverloadedStrings
-- QuasiQuotes
-- GeneralizedNewtypeDeriving
+- TemplateHaskell
+#- QuasiQuotes
+#- GeneralizedNewtypeDeriving
 - ConstraintKinds
 - FlexibleContexts
-- TemplateHaskell
-- FlexibleInstances
-- NoImplicitPrelude
-- ScopedTypeVariables
+#- FlexibleInstances
+#- NoImplicitPrelude
+#- ScopedTypeVariables
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
 # category:            Web
@@ -30,33 +30,33 @@ default-extensions:
 # common to point users to the README.md file.
 description:         Please see the README on GitHub at <https://github.com/githubuser/data-api#readme>
 
-
 dependencies:
-- classy-prelude
-- base
-
+  - base
 
 library:
   source-dirs: src
   dependencies:
-  - scotty
-  - mtl
-  - slug
-  - transformers
+  - base
+  - classy-prelude
+  - bytestring >= 0.9.1 && < 0.11
+  - mtl >= 2 && < 3
   - aeson
-  - postgresql-simple
-  - postgresql-simple-migration
-  - template-haskell
-  - warp
-  - warp-tls
-  - wai
-  - wai-cors
-  - http-types
+  - persistent
+  - persistent-sqlite
+  - persistent-template
   - resource-pool
+  - monad-control
+  - monad-logger
+  - text
+  - esqueleto
+  - snap-core >= 1.0 && < 1.1
+  - snap-server >= 1.0 && < 1.2
+  - time
+  - resourcet
   - data-has
-  - cryptonite
-  - jose
   - jose-jwt
+  - cryptonite
+  - template-haskell
   ghc-options:
   - -Wall
   - -Werror

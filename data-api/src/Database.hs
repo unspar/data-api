@@ -1,14 +1,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 --
-module Database ( dbMigration, createProfile ) where
+--module Database ( dbMigration, createProfile ) where
+module Database ( dbMigration) where
 
 import Database.Persist
 import Database.Persist.Class
 import Database.Persist.Sqlite as DbSql
+import Feature.Point.Types as Point
 import System.Environment
 import qualified Data.Text as T
-import Model
 import Data.Maybe ( fromMaybe )
 import Control.Monad.Trans.Resource
 import Control.Monad.Trans.Control
@@ -32,5 +33,5 @@ dbMigration = withDbRun $ runMigration $ migrateAll
 
 -- Queries
 -- User Queries
-createProfile :: User -> IO (Key User)
-createProfile user = withDbRun $ DbSql.insert user
+--createProfile :: User -> IO (Key User)
+--createProfile user = withDbRun $ DbSql.insert user
